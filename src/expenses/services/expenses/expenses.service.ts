@@ -1,37 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateExpenseDto } from '../../dtos/CreateExpense.dto';
-import { Expense } from '../../types/Expense';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+
+import { Expense } from 'src/schemas/Expense.schema';
 
 @Injectable()
 export class ExpensesService {
-  private expenses: Expense[] = [
-    {
-      id: 1,
-      date: new Date(),
-      amount: 100,
-      transaction_type: 'income',
-      category: 'salary',
-    },
-    {
-      id: 2,
-      date: new Date(),
-      amount: 300,
-      transaction_type: 'expense',
-      category: 'food',
-    },
-  ];
-  findExpensesById(id: number): Expense {
-    return this.expenses.find((expense: Expense): boolean => expense.id === id);
+  constructor(
+    @InjectModel(Expense.name) private ExpenseModel: Model<Expense>,
+  ) {}
+
+  isTransactionTypeValid(transactionType: string): boolean {
+    return ['Income', 'Expense'].includes(transactionType);
   }
-  createExpense(expense: CreateExpenseDto): CreateExpenseDto {
-    this.expenses.push(<Expense>expense);
-    return expense;
+  async createExpense(expense: CreateExpenseDto): Promise<Expense> {
+    const createdExpense = new this.ExpenseModel(expense);
+    return createdExpense.save();
   }
-  getExpenses(): Expense[] {
-    return this.expenses;
+  async findExpensesById(id: string): Promise<Expense> {
+    return this.ExpenseModel.findById(id).exec();
   }
 
-  updateExpense(expense: CreateExpenseDto): CreateExpenseDto {
-    return expense;
+  async getExpenses(): Promise<Expense[]> {
+    return this.ExpenseModel.find().exec();
+  }
+
+  async updateExpense(id: string, expense: CreateExpenseDto): Promise<Expense> {
+    return this.ExpenseModel.findByIdAndUpdate(id, expense, {
+      new: true,
+    });
+  }
+
+  async deleteExpense(id: string): Promise<Expense> {
+    return this.ExpenseModel.findByIdAndDelete(id);
   }
 }

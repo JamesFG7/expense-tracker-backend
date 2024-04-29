@@ -1,13 +1,12 @@
 import { ExpensesModule } from './expenses/expenses.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Module } from './users/.module';
 import { UsersModule } from './users/users.module';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/expense_tracker'),
     ExpensesModule,
-    Module,
     UsersModule,
   ],
   controllers: [],
