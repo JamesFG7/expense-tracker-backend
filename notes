@@ -1,0 +1,5 @@
+Questions:
+1. RPA or REST-API style routing
+2. Best way to handle updates (PUT or PATCH)
+3. File Structure
+4. Status code in each error response. Right now 400 ang gamit ko, pero sa laravel 422 kapag may validation error.

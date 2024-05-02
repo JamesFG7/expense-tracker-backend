@@ -3,17 +3,31 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../../schemas/User.schema';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
+import { UserResponseType } from '../../types/userResponse.type';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.userModel.findOne({ username }).exec();
-  }
-
   async create(user: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(user);
     return createdUser.save();
+  }
+
+  //bale tinatanggal niya lang yung password sa response
+  buildUserResponse(user: User): UserResponseType {
+    //Copilot suggestion, pero nag-iinarte si TypeScript dahil unused si password. Which is technically mas ok sana to para dynamic yung properties.
+    /*const { password, ...result } = user;
+    return result;*/
+    return {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      expenses: user.expenses,
+    };
+  }
+
+  generateToken(user: User): string {
+    return;
   }
 }
