@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../../../schemas/User.schema';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UserResponseType } from '../../types/userResponse.type';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,6 @@ export class UsersService {
   }
 
   generateToken(user: User): string {
-    return;
+    return sign({ email: user.email, user: user }, 'secret-key');
   }
 }
