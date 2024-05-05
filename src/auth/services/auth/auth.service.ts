@@ -17,7 +17,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async signIn({ username, password }: LoginPayloadDto): Promise<string> {
+  async signIn({ username, password }: LoginPayloadDto): Promise<User> {
     const user: User = await this.userModel
       .findOne({ username: username })
       .select('+password');
@@ -28,8 +28,8 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new HttpException('Incorrect Password', 400);
     }
-    const { ...result }: { username: string } = { username: user.username };
-    return this.jwtService.sign(result);
+    //const { ...result }: { username: string } = { username: user.username };
+    return user;
   }
 
   async register(register: RegisterPayloadDto): Promise<UserResponseType> {

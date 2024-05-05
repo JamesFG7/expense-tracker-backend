@@ -19,7 +19,7 @@ export class User {
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.pre<User>('save', async function (next: Function): Promise<void> {
+UserSchema.pre<User>('save', async function (next: any): Promise<void> {
   this.password = await hash(this.password, 10);
   next();
 });

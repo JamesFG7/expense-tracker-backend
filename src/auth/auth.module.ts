@@ -11,7 +11,10 @@ import { User, UserSchema } from '../schemas/User.schema';
   imports: [
     PassportModule,
     UsersModule,
-    JwtModule.register({ secret: 'secret', signOptions: { expiresIn: '3d' } }),
+    JwtModule.register({
+      secret: 'secret',
+      signOptions: { expiresIn: '3d' },
+    }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AuthController],

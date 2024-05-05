@@ -1,3 +1,3 @@
 import { User } from '../../schemas/User.schema';
 
-export type UserResponseType = Omit<User, 'password'>;
+export type UserResponseType = Omit<User, 'password'> & { token: string };
