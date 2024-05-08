@@ -4,8 +4,6 @@ import { Model } from 'mongoose';
 import { User } from '../../../schemas/User.schema';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UserResponseType } from '../../types/userResponse.type';
-import { sign } from 'jsonwebtoken';
-import { env } from 'process';
 
 @Injectable()
 export class UsersService {
@@ -25,13 +23,7 @@ export class UsersService {
       _id: user._id,
       username: user.username,
       email: user.email,
-      token: this.generateToken(user),
-      expenses: user.expenses,
     };
-  }
-
-  generateToken(user: User): string {
-    return sign({ email: user.email }, env.JWT_SECRET);
   }
 
   async findByEmail(email: string): Promise<User> {

@@ -1,29 +1,21 @@
 import { ExpensesModule } from './expenses/expenses.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
-import { MiddlewareConsumer, Module, Req, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
-import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     PassportModule,
     MongooseModule.forRoot('mongodb://localhost/expense_tracker'),
     ExpensesModule,
     UsersModule,
     AuthModule,
-    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes({
-      path: '*',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}

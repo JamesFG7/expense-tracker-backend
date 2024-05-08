@@ -1,7 +1,7 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { NextFunction } from 'express';
+import { Injectable, NestMiddleware, Req, Res } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
+import { verify } from 'jsonwebtoken';
 import { UsersService } from '../users/services/users/users.service';
-import { verify } from 'crypto';
 
 export interface ExpressRequest extends Request {
   user?: any;
@@ -9,16 +9,21 @@ export interface ExpressRequest extends Request {
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly UsersService: UsersService) {}
-  async use(req: Request, res: Response, next: NextFunction) {
-    if (!req.headers['authorization']) {
+  async use(
+    @Req() req: Request & { user?: any },
+    @Res() res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    if (!req.headers['cookie']) {
       req.user = null;
       next();
-      return;
     }
 
-    const token = req.headers['authorization'].split(' ')[1];
+    const token: string = req.headers['cookie'].split('=')[1];
     try {
-      const decode = verify(token, process.env.JWT_SECRET) as { email: string };
+      const decode = verify(token, process.env.JWT_SECRET) as {
+        email: string;
+      };
       const user = await this.UsersService.findByEmail(decode.email);
       req.user = user;
       next();

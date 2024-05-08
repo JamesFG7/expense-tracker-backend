@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserResponseType } from '../../../users/types/userResponse.type';
 import { compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import { env } from 'process';
 
 @Injectable()
 export class AuthService {
@@ -52,5 +54,9 @@ export class AuthService {
     }
     const createdUser: User = await this.usersService.create(register);
     return this.usersService.buildUserResponse(createdUser);
+  }
+
+  generateToken(user: { email: string }): string {
+    return sign({ email: user.email }, env.JWT_SECRET);
   }
 }

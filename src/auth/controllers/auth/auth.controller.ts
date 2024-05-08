@@ -1,17 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { RegisterPayloadDto } from 'src/auth/dtos/register.dto';
 import { LoginPayloadDto } from 'src/auth/dtos/login.dto';
 import { AuthService } from '../../services/auth/auth.service';
 import { UserResponseType } from '../../../users/types/userResponse.type';
 import { UsersService } from '../../../users/services/users/users.service';
-import { ExpressRequest } from 'src/middlewares/auth.middleware';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -24,16 +17,14 @@ export class AuthController {
     return this.authService.register(body);
   }
   @Post('login')
-  async login(@Body() body: LoginPayloadDto): Promise<UserResponseType> {
+  async login(
+    @Body() body: LoginPayloadDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<UserResponseType> {
     const user = await this.authService.signIn(body);
-    return this.UsersService.buildUserResponse(user);
-  }
-
-  @Get('profile')
-  async profile(@Request() request: ExpressRequest): Promise<UserResponseType> {
-    if (!request.user) {
-      throw new HttpException('Unauthorized', 401);
-    }
+    res.cookie('token', this.authService.generateToken({ email: user.email }), {
+      httpOnly: true,
+    });
     return this.UsersService.buildUserResponse(user);
   }
 }
