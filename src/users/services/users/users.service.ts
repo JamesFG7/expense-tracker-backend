@@ -33,4 +33,8 @@ export class UsersService {
   generateToken(user: User): string {
     return sign({ email: user.email }, env.JWT_SECRET);
   }
+
+  async findByEmail(email: string): Promise<User> {
+    return this.userModel.findOne({ email });
+  }
 }
