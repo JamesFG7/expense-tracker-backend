@@ -4,6 +4,7 @@ import { hash } from 'bcrypt';
 
 @Schema()
 export class User {
+  _id: string;
   @Prop({ required: true, unique: true })
   username: string;
 
@@ -14,8 +15,13 @@ export class User {
   password: string;
 
   @Prop({ type: [Expense], default: [] })
-  expenses: Expense[];
-  _id: string;
+  expenses: {
+    _id: string;
+    date: Date;
+    amount: number;
+    transaction_type: string;
+    category: string;
+  };
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 

@@ -1,4 +1,10 @@
-import { Injectable, NestMiddleware, Req, Res } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NestMiddleware,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { UsersService } from '../users/services/users/users.service';
@@ -16,7 +22,7 @@ export class AuthMiddleware implements NestMiddleware {
   ): Promise<void> {
     if (!req.headers['cookie']) {
       req.user = null;
-      next();
+      throw new HttpException('Unauthorized', 401);
     }
 
     const token: string = req.headers['cookie'].split('=')[1];

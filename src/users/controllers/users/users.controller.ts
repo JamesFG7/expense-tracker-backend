@@ -1,7 +1,7 @@
 import { Controller, Get, Req } from '@nestjs/common';
-import { ExpressRequest } from '../../../middlewares/auth.middleware';
 import { UserResponseType } from '../../types/userResponse.type';
 import { UsersService } from '../../services/users/users.service';
+import { ExpressRequest } from 'src/middlewares/auth.middleware';
 
 @Controller('users')
 export class UsersController {

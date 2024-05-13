@@ -5,10 +5,11 @@ import { ExpensesService } from './services/expenses/expenses.service';
 import { Expense, ExpenseSchema } from '../schemas/Expense.schema';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { UsersModule } from '../users/users.module';
+import { User, UserSchema } from 'src/schemas/User.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Expense.name, schema: ExpenseSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     UsersModule,
   ],
   controllers: [ExpensesController],
