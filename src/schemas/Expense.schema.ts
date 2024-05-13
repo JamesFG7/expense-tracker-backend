@@ -13,5 +13,8 @@ export class Expense {
 
   @Prop({ required: true })
   transaction_type: string;
+
+  @Prop({ type: String, ref: 'User', required: true })
+  userId: string;
 }
 export const ExpenseSchema = SchemaFactory.createForClass(Expense);

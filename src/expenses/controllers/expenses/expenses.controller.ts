@@ -5,29 +5,24 @@ import {
   Get,
   HttpException,
   Param,
+  Patch,
   Post,
-  Put,
+  Query,
+  Req,
   UsePipes,
   ValidationPipe,
-  Req,
 } from '@nestjs/common';
 import { ExpensesService } from '../../services/expenses/expenses.service';
+import { UpdateExpenseDto } from '../../dtos/UpdateExpense.dto';
+import { Expense } from '../../../schemas/Expense.schema';
+import mongoose from 'mongoose';
 import { CreateExpenseDto } from '../../dtos/CreateExpense.dto';
-import { ExpressRequest } from 'src/middlewares/auth.middleware';
-import { Expense } from 'src/expenses/types/Expense';
+import { ExpressRequest } from '../../../middlewares/auth.middleware';
+import { PaginatedExpense } from '../../types/PaginatedExpense';
 
 @Controller('expenses')
 export class ExpensesController {
   constructor(private expensesService: ExpensesService) {}
-
-  @Post('')
-  @UsePipes(new ValidationPipe())
-  createExpense(
-    @Body() expense: CreateExpenseDto,
-    @Req() request: ExpressRequest,
-  ) {
-    return this.expensesService.createExpense(expense, request.user._id);
-  }
   @Get(':id')
   async getExpense(
     @Param('id') id: string,
@@ -37,33 +32,53 @@ export class ExpensesController {
       id,
       request.user._id,
     );
-    if (expense) return expense;
-    else throw new HttpException('Expense not found!', 400);
+    const isValidObjectId: boolean = mongoose.Types.ObjectId.isValid(id);
+    if (expense && isValidObjectId) return expense;
+    throw new HttpException('Expense not found!', 400);
+  }
+
+  @Post('')
+  @UsePipes(new ValidationPipe())
+  async createExpense(
+    @Body() expense: CreateExpenseDto,
+    @Req() request: ExpressRequest,
+  ): Promise<Expense> {
+    return await this.expensesService.createExpense(expense, request.user._id);
   }
 
   @Get('')
-  getAllExpenses(@Req() request: ExpressRequest) {
-    return this.expensesService.getExpenses(request.user._id);
+  async getAllExpenses(
+    @Query('page') page: number,
+    @Req() request: ExpressRequest,
+  ): Promise<PaginatedExpense> {
+    console.log(page);
+    return this.expensesService.getExpenses(request.user._id, page);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UsePipes(new ValidationPipe())
   updateExpense(
     @Param('id') id: string,
-    @Body() expense: CreateExpenseDto,
     @Req() request: ExpressRequest,
-  ) {
-    return this.expensesService.updateExpense(id, expense, request.user._id);
+    @Body() expense: UpdateExpenseDto,
+  ): Promise<Expense> {
+    const isValidObjectId: boolean = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidObjectId) throw new HttpException('Invalid ID!', 400);
+    return this.expensesService.updateExpense(id, request.user._id, expense);
   }
 
-  /* @Delete(':id')
+  @Delete(':id')
   @UsePipes(new ValidationPipe())
-  async deleteExpense(@Param('id') id: string) {
-    const expense = await this.expensesService.deleteExpense(
+  async deleteExpense(
+    @Param('id') id: string,
+    @Req() request: ExpressRequest,
+  ): Promise<Expense> {
+    const expense: Expense = await this.expensesService.deleteExpense(
       id,
       request.user._id,
     );
-    if (expense) expense;
+    const isValidObjectId: boolean = mongoose.Types.ObjectId.isValid(id);
+    if (expense && isValidObjectId) return expense;
     else throw new HttpException('Expense not found!', 400);
-  } */
+  }
 }
