@@ -15,6 +15,23 @@ export class ExpensesService {
   isTransactionTypeValid(transactionType: string): boolean {
     return ['Income', 'Expense'].includes(transactionType);
   }
+  async dashboard(userId: string) {
+    const expenses: Expense[] = await this.ExpenseModel.find({
+      userId: userId,
+    }).exec();
+    return expenses;
+    /* const totalIncome = expenses
+      .filter((expense) => expense.transactionType === 'Income')
+      .reduce((acc, expense) => acc + expense.amount, 0);
+    const totalExpense = expenses
+      .filter((expense) => expense.transactionType === 'Expense')
+      .reduce((acc, expense) => acc + expense.amount, 0);
+    return {
+      totalIncome,
+      totalExpense,
+      balance: totalIncome - totalExpense,
+    }; */
+  }
   async createExpense(
     expense: CreateExpenseDto,
     userId: string,

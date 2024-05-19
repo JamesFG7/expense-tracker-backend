@@ -23,6 +23,11 @@ import { PaginatedExpense } from '../../types/PaginatedExpense';
 @Controller('expenses')
 export class ExpensesController {
   constructor(private expensesService: ExpensesService) {}
+
+  @Get('' + '/dashboard')
+  async dashboard(@Req() request: ExpressRequest): Promise<any> {
+    return this.expensesService.dashboard(request.user._id);
+  }
   @Get(':id')
   async getExpense(
     @Param('id') id: string,
